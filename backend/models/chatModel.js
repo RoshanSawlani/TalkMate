@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('./userModel')
 
 const chatModel = mongoose.Schema({
     chatName : {type:String,trim:true},
