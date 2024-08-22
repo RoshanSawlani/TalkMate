@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, useToast, VStack } from '@chakra-ui/react'
 import { useHistory } from 'react-router-dom'
 import axios from 'axios'
+import { ChatState } from '../../Context/ChatProvider'
 
 const Login = () => {
     const [show, setShow] = useState()
@@ -10,7 +11,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const toast = useToast()
     const history = useHistory()
-
+    const { setUser } = ChatState();
     const handleClick = () => setShow(!show)
 
     const submitHandler = async () => {
@@ -47,7 +48,7 @@ const Login = () => {
                 isClosable: true,
                 position: "bottom",
             });
-            
+            setUser(data);
             localStorage.setItem("userInfo", JSON.stringify(data));
             setLoading(false);
             history.push("/chats");
