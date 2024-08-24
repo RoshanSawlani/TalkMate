@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, Input, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
+import { Avatar, Box, Button, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, Input, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spinner, Text, Tooltip, useDisclosure, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons"
 import { ChatState } from '../../Context/ChatProvider'
@@ -13,7 +13,7 @@ const SideDrawer = () => {
     const [search, setSearch] = useState("")
     const [searchResult, setSearchResult] = useState([])
     const [loading, setLoading] = useState(false)
-    const [loadingChat, setLoadingChat] = useState(false)
+    const [loadingChat, setLoadingChat] = useState()
 
     const history = useHistory()
     const { user,setSelectedChat,chats,setChats } = ChatState()
@@ -67,7 +67,9 @@ const SideDrawer = () => {
                     Authorization: `Bearer ${user.token}`
                 },
             }
-            const {data} = await axios.post("/api/chats",{userId},config)
+            const {data} = await axios.post("/api/chat",{userId},config)
+            if(!chats.find((c)=>c._id === data._id)) setChats([data,...chats])
+
             setSelectedChat(data)
             setLoadingChat(false)
             onClose()
@@ -134,9 +136,9 @@ const SideDrawer = () => {
                             ))
                         )
                     }
+                    {loadingChat && <Spinner ml="auto" display="flex" />}
                 </DrawerBody>
                 </DrawerContent>
-                
             </Drawer>
         </>
     )
