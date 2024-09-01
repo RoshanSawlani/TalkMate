@@ -49,10 +49,27 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
             })            
         }
     }
+    
+    useEffect(()=>{
+        socket = io(ENDPOINT)
+        socket.emit("setup",user)
+        socket.on("connection",()=>{setSocketConnected(true)})
+    },[])
+
     useEffect(()=>{
         fetchMessages()
         selectedChatCompare = selectedChat
     },[selectedChat])
+
+    useEffect(()=>{
+        socket.on('message recieved',(newMessageRecieved)=>{
+            if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
+                // give notification
+            }else{
+                setMessages([...messages,newMessageRecieved])
+            }
+        })
+    })
 
     const sendMessage = async(event) => {
         if(event.key === "Enter" && newMessage){
@@ -71,8 +88,8 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
                     },config
                 )
                 console.log(data)
-                
-                setMessages([...newMessage,data])
+                socket.emit('new message',data)
+                setMessages([...messages,data])
             } catch (error) {
                 toast({
                     title:"Error Occurred",
@@ -86,11 +103,6 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
         }
     }
 
-    useEffect(()=>{
-        socket = io(ENDPOINT)
-        socket.emit("setup",user)
-        socket.on("connection",()=>{setSocketConnected(true)})
-    },[])
 
     const typingHandler = (e) =>{
         setNewMessage(e.target.value)

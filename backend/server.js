@@ -49,5 +49,14 @@ io.on('connection',(socket)=>{
         console.log("User joined room " + room)
     })
     
-    
+    socket.on("new message",(newMessageRecieved)=>{
+        var chat = newMessageRecieved.chat;
+        if(!chat.users) return console.log("chat.users not defined")
+        
+        chat.users.forEach((user)=>{
+            if(user._id == newMessageRecieved.sender._id){
+                socket.in(user._id).emit("message recieved",newMessageRecieved)
+            }
+        })
+    })
 })
